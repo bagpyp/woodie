@@ -47,7 +47,7 @@ public class Resident {
     @Getter @Setter private LocalDate birthDate;
     @Transient
     @Setter private Integer age;
-    @Getter @Setter private Float rent = 1_000F;
+    @Getter @Setter private Float rent;
 
     public Resident(
                     String firstName,

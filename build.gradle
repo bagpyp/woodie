@@ -1,3 +1,5 @@
+import java.text.SimpleDateFormat
+
 plugins {
 	id 'org.springframework.boot' version '2.6.6'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -12,6 +14,20 @@ repositories {
 	mavenCentral()
 }
 
+configurations {
+	acceptanceTestImplementation
+	acceptanceTestCompileOnly.extendsFrom acceptanceTestAnnotationProcessor
+}
+
+sourceSets {
+	acceptanceTest {
+		java {}
+	}
+}
+
+def cucumberVersion = '7.2.3'
+def junitVersion = '5.7.2'
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -20,8 +36,50 @@ dependencies {
 	runtimeOnly 'org.postgresql:postgresql'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.6.6'
+	implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+	implementation 'io.cucumber:cucumber-spring:7.2.3'
+
+	// acceptance tests
+	acceptanceTestAnnotationProcessor 'org.projectlombok:lombok:1.18.22'
+
+	acceptanceTestImplementation "io.cucumber:cucumber-java:${cucumberVersion}"
+	acceptanceTestImplementation "io.cucumber:cucumber-junit-platform-engine:${cucumberVersion}"
+	acceptanceTestImplementation "io.cucumber:cucumber-picocontainer:${cucumberVersion}"
+
+	acceptanceTestImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+	acceptanceTestImplementation "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+
+	acceptanceTestImplementation 'org.hamcrest:hamcrest-junit:2.0.0.0'
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+
+task acceptanceTest(type: Test) {
+	description = 'Runs the acceptance tests.'
+	group = 'verification'
+	outputs.upToDateWhen { false }
+
+	classpath = sourceSets.acceptanceTest.runtimeClasspath
+	testClassesDirs = sourceSets.acceptanceTest.output.classesDirs
+	useJUnitPlatform()
+
+	def fmt = new SimpleDateFormat("HH:mm:ss")
+
+	doFirst {
+		println "starting acceptance tests at: " + fmt.format(Calendar.getInstance().getTime());
+	}
+
+	if (project.hasProperty('url')) {
+		environment 'SERVICE_URI', project.getProperty('url')
+	}
+	if (project.hasProperty('authorization')) {
+		environment 'AUTHORIZATION', project.getProperty('authorization')
+	}
+
+	doLast {
+		println "completing acceptance tests at: " +  fmt.format(Calendar.getInstance().getTime());
+	}
 }
