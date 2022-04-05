@@ -18,6 +18,7 @@ import java.util.List;
 @RequestMapping(path = "api/v1/resident")
 public class ResidentController {
 
+    // Is autowired because of the below contstructor and because it's a Bean!
     private final ResidentService residentService;
 
     @Autowired

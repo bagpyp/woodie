@@ -4,7 +4,7 @@ spring:
     username: postgres
     password: postgres
   jpa:
-    hibernate.ddl-auto: create-drop
+    hibernate.ddl-auto: create-drop # create db when server starts, drop after
     show-sql: true
     properties:
       hibernate:
@@ -12,4 +12,10 @@ spring:
         format_sql: true
 server:
   error:
-    include-message: always
+    include-message: always # for malformed/bad requests
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /

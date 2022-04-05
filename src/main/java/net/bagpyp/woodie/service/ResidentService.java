@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-@Service
+@Service // same thing as Bean or Component but mnemonic
 public class ResidentService {
 
     private final ResidentRepository residentRepository;
